@@ -1,0 +1,47 @@
+### Get all images
+GET http://localhost:3000/api/images
+
+### Get one image by ID
+GET http://localhost:3000/api/images/69a6218adbdc52b8700c3d89
+
+### Get one image - invalid ID (should return 404)
+GET http://localhost:3000/api/images/invalidid123
+
+### Get one image - valid ObjectId but doesn't exist (should return 404)
+GET http://localhost:3000/api/images/000000000000000000000000
+
+### Rename image - valid request
+PATCH http://localhost:3000/api/images/69a6218adbdc52b8700c3d89
+Content-Type: application/json
+
+{ "name": "A new image name" }
+
+### Rename image - missing name field (should return 400)
+PATCH http://localhost:3000/api/images/69a6218adbdc52b8700c3d89
+Content-Type: application/json
+
+{ "somethingElse": "value" }
+
+### Rename image - empty name (should return 400)
+PATCH http://localhost:3000/api/images/69a6218adbdc52b8700c3d89
+Content-Type: application/json
+
+{ "name": "" }
+
+### Rename image - name too long, over 100 chars (should return 422)
+PATCH http://localhost:3000/api/images/69a6218adbdc52b8700c3d89
+Content-Type: application/json
+
+{ "name": "This is an extremely long image name that is definitely over one hundred characters long and should trigger the unprocessable entity error response from the server" }
+
+### Rename image - nonexistent image (should return 404)
+PATCH http://localhost:3000/api/images/000000000000000000000000
+Content-Type: application/json
+
+{ "name": "New name" }
+
+### Rename image - invalid ObjectId (should return 404)
+PATCH http://localhost:3000/api/images/notavalidid
+Content-Type: application/json
+
+{ "name": "New name" }

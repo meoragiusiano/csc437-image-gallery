@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { getEnvVar } from "./getEnvVar.js";
 
 export class ImageProvider {
@@ -15,8 +15,8 @@ export class ImageProvider {
         pipeline.push({
             $lookup: {
                 from: usersCollectionName,
-                localField: "author",
-                foreignField: "_id",
+                localField: "authorId",
+                foreignField: "username",
                 as: "author"
             }
         });
@@ -26,5 +26,38 @@ export class ImageProvider {
         });
 
         return this.collection.aggregate(pipeline).toArray();
+    }
+
+    async getOneImage(imageId) {
+        const usersCollectionName = getEnvVar("USERS_COLLECTION_NAME");
+        const pipeline = [];
+
+        pipeline.push({
+            $match: { _id: new ObjectId(imageId) }
+        });
+
+        pipeline.push({
+            $lookup: {
+                from: usersCollectionName,
+                localField: "authorId",
+                foreignField: "username",
+                as: "author"
+            }
+        });
+
+        pipeline.push({
+            $unwind: "$author"
+        });
+
+        const results = await this.collection.aggregate(pipeline).toArray();
+        return results.length > 0 ? results[0] : null;
+    }
+
+    async updateImageName(imageId, newName) {
+        const result = await this.collection.updateOne(
+            { _id: new ObjectId(imageId) },
+            { $set: { name: newName } }
+        );
+        return result.matchedCount;
     }
 }

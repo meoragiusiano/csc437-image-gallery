@@ -3,6 +3,7 @@ import { getEnvVar } from "./getEnvVar.js";
 import { VALID_ROUTES } from "../../shared/ValidRoutes.js";
 import { connectMongo } from "./connectMongo.js";
 import { ImageProvider } from "./ImageProvider.js";
+import { registerImageRoutes } from "./routes/imageRoutes.js";
 
 const PORT = Number.parseInt(getEnvVar("PORT", false), 10) || 3000;
 const STATIC_DIR = getEnvVar("STATIC_DIR") || "public";
@@ -10,28 +11,12 @@ const STATIC_DIR = getEnvVar("STATIC_DIR") || "public";
 const app = express();
 
 app.use(express.static(STATIC_DIR));
+app.use(express.json());
 
 const mongoClient = connectMongo();
 const imageProvider = new ImageProvider(mongoClient);
 
-function waitDuration(numMs) {
-    return new Promise(resolve => setTimeout(resolve, numMs));
-}
-
-app.get("/api/hello", (req, res) => {
-    res.send("Hello, World!");
-});
-
-app.get("/api/images", async (req, res) => {
-    await waitDuration(1000);
-    try {
-        const images = await imageProvider.getAllImages();
-        res.json(images);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to fetch images" });
-    }
-});
+registerImageRoutes(app, imageProvider);
 
 app.get(Object.values(VALID_ROUTES), (req, res) => {
     res.sendFile("index.html", { root: STATIC_DIR });
