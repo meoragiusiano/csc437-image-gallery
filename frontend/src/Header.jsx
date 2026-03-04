@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { VALID_ROUTES } from "../../shared/ValidRoutes.js";
 import "./Header.css";
 
 export function Header() {
@@ -10,9 +11,9 @@ export function Header() {
                     Some switch (dark mode?) <input type="checkbox" />
                 </label>
                 <nav>
-                    <Link to="/">Home</Link>
-                    <Link to="/upload">Upload</Link>
-                    <Link to="/login">Log in</Link>
+                    <Link to={VALID_ROUTES.HOME}>Home</Link>
+                    <Link to={VALID_ROUTES.UPLOAD}>Upload</Link>
+                    <Link to={VALID_ROUTES.LOGIN}>Log in</Link>
                 </nav>
             </div>
         </header>
