@@ -3,7 +3,7 @@ import { getEnvVar } from "./getEnvVar.js";
 import { VALID_ROUTES } from "../../shared/ValidRoutes.js";
 import { connectMongo } from "./connectMongo.js";
 import { ImageProvider } from "./ImageProvider.js";
-import { registerImageRoutes } from "./routes/imageRoutes.js";
+import { registerImageRoutes } from "./routes/ImageRoutes.js";
 
 const PORT = Number.parseInt(getEnvVar("PORT", false), 10) || 3000;
 const STATIC_DIR = getEnvVar("STATIC_DIR") || "public";
