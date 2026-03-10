@@ -45,3 +45,78 @@ PATCH http://localhost:3000/api/images/notavalidid
 Content-Type: application/json
 
 { "name": "New name" }
+
+### Register a new user (should return 201)
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{ "username": "testuser", "email": "test@example.com", "password": "password" }
+
+### Register - missing fields (should return 400)
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{ "username": "testuser" }
+
+### Register - duplicate username (should return 409)
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{ "username": "testuser", "email": "test2@example.com", "password": "password2" }
+
+### Login - valid credentials (should return 200 with token)
+POST http://localhost:3000/api/auth/tokens
+Content-Type: application/json
+
+{ "username": "testuser", "password": "password" }
+
+### Login - missing fields (should return 400)
+POST http://localhost:3000/api/auth/tokens
+Content-Type: application/json
+
+{ "username": "testuser" }
+
+### Login - wrong password (should return 401)
+POST http://localhost:3000/api/auth/tokens
+Content-Type: application/json
+
+{ "username": "testuser", "password": "wrongpassword" }
+
+### Login - nonexistent user (should return 401)
+POST http://localhost:3000/api/auth/tokens
+Content-Type: application/json
+
+{ "username": "nobody", "password": "password" }
+
+### Register chunkylover23 (should return 201)
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{ "username": "chunkylover23", "email": "alice@example.com", "password": "password" }
+
+### Login as chunkylover23 (should return 200 with token)
+POST http://localhost:3000/api/auth/tokens
+Content-Type: application/json
+
+{ "username": "chunkylover23", "password": "password" }
+
+### Get all images - with auth (should return 200)
+GET http://localhost:3000/api/images
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNodW5reWxvdmVyMjMiLCJpYXQiOjE3NzMxMjA5MzEsImV4cCI6MTc3MzIwNzMzMX0.dCdeBBSuHy_JJGnPHrEXrrMEb9auK_WW6Iszttdq378
+
+### Get all images - no auth (should return 401)
+GET http://localhost:3000/api/images
+
+### Rename image - with auth, as owner (should return 204)
+PATCH http://localhost:3000/api/images/69a6218adbdc52b8700c3d89
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNodW5reWxvdmVyMjMiLCJpYXQiOjE3NzMxMjA5MzEsImV4cCI6MTc3MzIwNzMzMX0.dCdeBBSuHy_JJGnPHrEXrrMEb9auK_WW6Iszttdq378
+
+{ "name": "A new image name" }
+
+### Rename image - with auth, not the owner (should return 403)
+PATCH http://localhost:3000/api/images/69a6218adbdc52b8700c3d89
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyIiwiaWF0IjoxNzczMTIxMTEwLCJleHAiOjE3NzMyMDc1MTB9.pDfDK57UPCtpORZSSMqowCJKteNjX4b9VO7g3ciHnsc
+
+{ "name": "Should be forbidden" }

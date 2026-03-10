@@ -83,14 +83,24 @@ export function registerImageRoutes(app, imageProvider) {
         }
 
         try {
-            const matchedCount = await imageProvider.updateImageName(id, name);
-            if (matchedCount === 0) {
+            const image = await imageProvider.getOneImage(id);
+            if (!image) {
                 res.status(404).send({
                     error: "Not Found",
                     message: "Image does not exist"
                 });
                 return;
             }
+
+            if (image.authorId !== req.userInfo.username) {
+                res.status(403).send({
+                    error: "Forbidden",
+                    message: "This user does not own this image"
+                });
+                return;
+            }
+
+            await imageProvider.updateImageName(id, name);
             res.status(204).send();
         } catch (error) {
             console.error(error);
