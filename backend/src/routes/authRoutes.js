@@ -46,7 +46,8 @@ export function registerAuthRoutes(app, credentialsProvider) {
                 });
                 return;
             }
-            res.status(201).end();
+            const token = await generateAuthToken(username);
+            res.status(201).json({ token });
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: "Failed to create user" });
