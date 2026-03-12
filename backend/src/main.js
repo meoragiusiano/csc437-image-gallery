@@ -9,11 +9,14 @@ import { registerAuthRoutes } from "./routes/authRoutes.js";
 import { verifyAuthToken } from "./routes/verifyAuthToken.js";
 
 const PORT = Number.parseInt(getEnvVar("PORT", false), 10) || 3000;
-const STATIC_DIR = getEnvVar("STATIC_DIR") || "public";
+const STATIC_DIR = getEnvVar("STATIC_DIR");
+
+const IMAGE_UPLOAD_DIR = getEnvVar("IMAGE_UPLOAD_DIR");
 
 const app = express();
 
 app.use(express.static(STATIC_DIR));
+app.use("/uploads", express.static(IMAGE_UPLOAD_DIR));
 app.use(express.json());
 
 const mongoClient = connectMongo();

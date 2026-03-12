@@ -1,5 +1,6 @@
 import express from "express";
 import { ObjectId } from "mongodb";
+import { imageMiddlewareFactory, handleImageFileErrors } from "../imageUploadMiddleware.js";
 
 const MAX_NAME_LENGTH = 100;
 
@@ -45,6 +46,32 @@ export function registerImageRoutes(app, imageProvider) {
             res.status(500).json({ error: "Failed to fetch image" });
         }
     });
+
+    app.post(
+        "/api/images",
+        imageMiddlewareFactory.single("image"),
+        handleImageFileErrors,
+        async (req, res) => {
+            if (!req.file || !req.body.name) {
+                res.status(400).send({
+                    error: "Bad Request",
+                    message: "Missing image file or image name"
+                });
+                return;
+            }
+
+            try {
+                const src = `/uploads/${req.file.filename}`;
+                const name = req.body.name;
+                const authorId = req.userInfo.username;
+                const id = await imageProvider.createImage(src, name, authorId);
+                res.status(201).json({ id });
+            } catch (error) {
+                console.error(error);
+                res.status(500).json({ error: "Failed to upload image" });
+            }
+        }
+    );
 
     app.patch("/api/images/:id", async (req, res) => {
         const { id } = req.params;

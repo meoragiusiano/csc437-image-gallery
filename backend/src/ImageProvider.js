@@ -53,6 +53,11 @@ export class ImageProvider {
         return results.length > 0 ? results[0] : null;
     }
 
+    async createImage(src, name, authorId) {
+        const result = await this.collection.insertOne({ src, name, authorId });
+        return result.insertedId;
+    }
+
     async updateImageName(imageId, newName) {
         const result = await this.collection.updateOne(
             { _id: new ObjectId(imageId) },
